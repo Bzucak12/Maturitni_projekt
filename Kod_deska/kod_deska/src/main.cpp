@@ -113,14 +113,14 @@ void appendFile(fs::FS &fs, const char *path, const char *message)
 
 String ziskej_cas()
 {
-  struct tm casove_infomace;
-  char buf[32] = {0};
-  if (!getLocalTime(&casove_infomace))
-  {
-    return String("zadny-cas");
-  }
-  strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", &casove_infomace);
-  return String(buf);
+    struct tm casove_infomace;
+    char buf[32] = {0};
+    if (!getLocalTime(&casove_infomace))
+    {
+        return String("zadny-cas");
+    }
+    strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", &casove_infomace);
+    return String(buf);
 }
 
 void uloz_data(const char *path, String data)
@@ -145,89 +145,89 @@ void uloz_data(const char *path, String data)
 void posli_data_senzoru_pohybu_na_server(unsigned long ms)
 {
     const int interval_poslani = 1000;
-  static unsigned long minuly_cas_poslani = 0;
+    static unsigned long minuly_cas_poslani = 0;
 
-  if (ms - minuly_cas_poslani >= interval_poslani)
-  {
-    minuly_cas_poslani = ms;
-  
-    if (WiFi.status() == WL_CONNECTED)
+    if (ms - minuly_cas_poslani >= interval_poslani)
     {
-      HTTPClient http;
-      http.begin(URL_POHYB);
-      http.addHeader("Content-Type", "application/x-www-form-urlencoded");
+        minuly_cas_poslani = ms;
 
-      String cas = ziskej_cas();
-      String data = "cas_ulozeni=" + cas +
-                        "&pohyb=" + String(int(pohyb)) +
-                        "&pocet_osob=" + String(pocet_osob);
+        if (WiFi.status() == WL_CONNECTED)
+        {
+            HTTPClient http;
+            http.begin(URL_POHYB);
+            http.addHeader("Content-Type", "application/x-www-form-urlencoded");
 
-      int http_kod_odpovedi = http.POST(data);
+            String cas = ziskej_cas();
+            String data = "cas_ulozeni=" + cas +
+                          "&pohyb=" + String(int(pohyb)) +
+                          "&pocet_osob=" + String(pocet_osob);
 
-      if (http_kod_odpovedi > 0)
-      {
-        String odpoved = http.getString();
-        Serial.println("Odpoved serveru: " + odpoved);
-      }
-      else
-      {
-        Serial.println("Chyba pri odeslani POST: " + String(http_kod_odpovedi));
-      }
+            int http_kod_odpovedi = http.POST(data);
 
-      http.end();
+            if (http_kod_odpovedi > 0)
+            {
+                String odpoved = http.getString();
+                Serial.println("Odpoved serveru: " + odpoved);
+            }
+            else
+            {
+                Serial.println("Chyba pri odeslani POST: " + String(http_kod_odpovedi));
+            }
+
+            http.end();
+        }
+        else
+        {
+            Serial.println("WiFi neni pripojena. Nelze poslat data.");
+        }
     }
-    else
-    {
-      Serial.println("WiFi neni pripojena. Nelze poslat data.");
-    }
-  }
 }
 
 void posli_data_senzoru_teploty_na_server(unsigned long ms)
 {
     const int interval_poslani = 60000;
-  static unsigned long minuly_cas_poslani = 0;
+    static unsigned long minuly_cas_poslani = 0;
 
-  if (ms - minuly_cas_poslani >= interval_poslani)
-  {
-    if(teplota == 0.0 && tlak == 0.0 && vlhkost == 0.0 && nadmorskavyska == 0)
+    if (ms - minuly_cas_poslani >= interval_poslani)
     {
-      return; // Neodesilat prazdne hodnoty
+        if (teplota == 0.0 && tlak == 0.0 && vlhkost == 0.0 && nadmorskavyska == 0)
+        {
+            return; // Neodesilat prazdne hodnoty
+        }
+        minuly_cas_poslani = ms;
+
+        if (WiFi.status() == WL_CONNECTED)
+        {
+            HTTPClient http;
+            http.begin(URL_TEPLOTA);
+            http.addHeader("Content-Type", "application/x-www-form-urlencoded");
+
+            String cas = ziskej_cas();
+            String data = "cas_ulozeni=" + cas +
+                          "&teplota=" + String(teplota) +
+                          "&tlak=" + String(tlak) +
+                          "&vlhkost=" + String(vlhkost) +
+                          "&nadmorska_vyska=" + String(nadmorskavyska);
+
+            int http_kod_odpovedi = http.POST(data);
+
+            if (http_kod_odpovedi > 0)
+            {
+                String odpoved = http.getString();
+                Serial.println("Odpoved serveru: " + odpoved);
+            }
+            else
+            {
+                Serial.println("Chyba pri odeslani POST: " + String(http_kod_odpovedi));
+            }
+
+            http.end();
+        }
+        else
+        {
+            Serial.println("WiFi neni pripojena. Nelze poslat data.");
+        }
     }
-    minuly_cas_poslani = ms;
-  
-    if (WiFi.status() == WL_CONNECTED)
-    {
-      HTTPClient http;
-      http.begin(URL_TEPLOTA);
-      http.addHeader("Content-Type", "application/x-www-form-urlencoded");
-
-      String cas = ziskej_cas();
-      String data = "cas_ulozeni=" + cas +
-                        "&teplota=" + String(teplota) +
-                        "&tlak=" + String(tlak) +
-                        "&vlhkost=" + String(vlhkost) +
-                        "&nadmorska_vyska=" + String(nadmorskavyska);
-
-      int http_kod_odpovedi = http.POST(data);
-
-      if (http_kod_odpovedi > 0)
-      {
-        String odpoved = http.getString();
-        Serial.println("Odpoved serveru: " + odpoved);
-      }
-      else
-      {
-        Serial.println("Chyba pri odeslani POST: " + String(http_kod_odpovedi));
-      }
-
-      http.end();
-    }
-    else
-    {
-      Serial.println("WiFi neni pripojena. Nelze poslat data.");
-    }
-  }
 }
 
 void cti_tlacitka()
@@ -413,6 +413,15 @@ void aktualizaceLedek()
     else
     {
         digitalWrite(LED_pohyb, LOW);
+    }
+
+    if ((WiFi.status() == WL_CONNECTED))
+    {
+        digitalWrite(LED_data_ulozena, HIGH);
+    }
+    else
+    {
+        digitalWrite(LED_data_ulozena, LOW);
     }
 
     // LED pro uspesne ulozeni dat muze blikat na kazdy zapis
