@@ -20,8 +20,8 @@
 #define SEALEVELPRESSURE_HPA (1013.25)
 #define BME280_ADDRESS (0x77)
 #define i2c_Address 0x3c
-Adafruit_SH1106G displej = Adafruit_SH1106G(128, 64, &Wire, -1); // Nastavi displej
-Adafruit_BME280 bme;                                             // I2C
+Adafruit_SH1106G displej = Adafruit_SH1106G(128, 64, &Wire, -1); 
+Adafruit_BME280 bme;                                             
 LD2450 radar;
 
 const char *ntpServer = "pool.ntp.org";
@@ -192,7 +192,7 @@ void posli_data_senzoru_teploty_na_server(unsigned long ms)
     {
         if (teplota == 0.0 && tlak == 0.0 && vlhkost == 0.0 && nadmorskavyska == 0)
         {
-            return; // Neodesilat prazdne hodnoty
+            return;
         }
         minuly_cas_poslani = ms;
 
@@ -267,7 +267,7 @@ void cti_tlacitka()
 void zapis_data_senzoru_pohybu_do_souboru(unsigned long aktualni_ms)
 {
     static unsigned long minuly_cas_zapisu = 0;
-    const unsigned long interval_zapisu = 1000; // ms
+    const unsigned long interval_zapisu = 1000;
     if (aktualni_ms - minuly_cas_zapisu >= interval_zapisu)
     {
         String cas = ziskej_cas();
@@ -283,7 +283,7 @@ void zapis_data_senzoru_pohybu_do_souboru(unsigned long aktualni_ms)
 void zapis_data_senzoru_teploty_do_souboru(unsigned long aktualni_ms)
 {
     static unsigned long minuly_cas_zapisu = 0;
-    const unsigned long interval_zapisu = 60000; // ms
+    const unsigned long interval_zapisu = 60000; 
     if (aktualni_ms - minuly_cas_zapisu >= interval_zapisu)
     {
         String cas = ziskej_cas();
@@ -302,8 +302,8 @@ void cti_senzory(unsigned long aktualni_ms)
 {
     static unsigned long minuly_cas_cteni_radaru = 0;
     static unsigned long minuly_cas_cteni_bme = 0;
-    const unsigned long interval_cteni_radaru = 1000; // ms
-    const unsigned long interval_cteni_bme = 60000;   // ms
+    const unsigned long interval_cteni_radaru = 1000; 
+    const unsigned long interval_cteni_bme = 60000;   
     if (aktualni_ms - minuly_cas_cteni_radaru >= interval_cteni_radaru)
     {
         radar.read();
@@ -320,7 +320,7 @@ void cti_senzory(unsigned long aktualni_ms)
     }
     if (aktualni_ms - minuly_cas_cteni_bme >= interval_cteni_bme)
     {
-        bme.takeForcedMeasurement(); // Nutno provest pred ctenim
+        bme.takeForcedMeasurement();
         teplota = bme.readTemperature();
         tlak = bme.readPressure() / 100.0F;
         vlhkost = bme.readHumidity();
@@ -336,7 +336,7 @@ void cti_senzory(unsigned long aktualni_ms)
 void vypis_na_displej(unsigned long aktualni_ms)
 {
     static unsigned long minuly_cas_aktualizace_displeje = 0;
-    const unsigned long interval_aktualizace_displeje = 1000; // ms
+    const unsigned long interval_aktualizace_displeje = 1000; 
     if (aktualni_ms - minuly_cas_aktualizace_displeje >= interval_aktualizace_displeje)
     {
         Serial.print(tlacitko2_stav ? "DISPLEJ ON " : "DISPLEJ OFF ");
@@ -424,15 +424,13 @@ void aktualizaceLedek()
         digitalWrite(LED_data_ulozena, LOW);
     }
 
-    // LED pro uspesne ulozeni dat muze blikat na kazdy zapis
 }
 void setup()
 {
     Wire.begin(I2C_SDA, I2C_SCL);
     Serial.begin(115200);
-    while (!Serial)
-        ;                                      // Cekam na spusteni seriove linky
-    Serial2.begin(256000, SERIAL_8N1, 16, 15); // RX, TX
+    while (!Serial);                                    
+    Serial2.begin(256000, SERIAL_8N1, 16, 15);
     radar.begin(Serial2, false);
     displej.begin(i2c_Address, true);
     displej.clearDisplay();
@@ -467,7 +465,7 @@ void setup()
 
     configTime(3600, 3600, "pool.ntp.org", "time.nist.gov");
     delay(5000);
-    ziskej_cas(); // Ziskani casu pro inicializaci
+    ziskej_cas(); 
     if (!SD.begin(5))
     {
         Serial.println("Pripojeni SD karty selhalo!");
