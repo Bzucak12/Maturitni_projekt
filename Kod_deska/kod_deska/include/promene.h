@@ -12,11 +12,11 @@ inline Adafruit_SH1106G displej = Adafruit_SH1106G(128, 64, &Wire, -1);
 inline Adafruit_BME280 bme;                                             
 inline LD2450 radar;
 
-inline const int LED_tep_vysoka = 25;
-inline const int LED_tep_nizka = 26;
+inline const int LED_tep_vysoka = 22;
+inline const int LED_tep_nizka = 13;
 inline const int LED_vlhokost_vysoka = 27;
-inline const int LED_pohyb = 13;
-inline const int LED_data_ulozena = 22;
+inline const int LED_pohyb = 26;
+inline const int LED_wifi_pripojena = 25;
 
 inline const double horni_mez_teploty = 25.0;
 inline const double spodni_mez_teploty = 19.0;

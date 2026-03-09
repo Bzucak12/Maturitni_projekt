@@ -38,11 +38,11 @@ void aktualizaceLedek()
 
     if ((WiFi.status() == WL_CONNECTED))
     {
-        digitalWrite(LED_data_ulozena, HIGH);
+        digitalWrite(LED_wifi_pripojena, HIGH);
     }
     else
     {
-        digitalWrite(LED_data_ulozena, LOW);
+        digitalWrite(LED_wifi_pripojena, LOW);
     }
 
 }

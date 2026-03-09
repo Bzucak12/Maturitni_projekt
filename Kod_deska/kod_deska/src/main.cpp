@@ -67,12 +67,12 @@ void setup()
     pinMode(LED_tep_nizka, OUTPUT);
     pinMode(LED_vlhokost_vysoka, OUTPUT);
     pinMode(LED_pohyb, OUTPUT);
-    pinMode(LED_data_ulozena, OUTPUT);
+    pinMode(LED_wifi_pripojena, OUTPUT);
     digitalWrite(LED_tep_vysoka, LOW);
     digitalWrite(LED_tep_nizka, LOW);
     digitalWrite(LED_vlhokost_vysoka, LOW);
     digitalWrite(LED_pohyb, LOW);
-    digitalWrite(LED_data_ulozena, LOW);
+    digitalWrite(LED_wifi_pripojena, LOW);
 }
 
 void loop()

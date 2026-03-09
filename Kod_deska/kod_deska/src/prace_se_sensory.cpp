@@ -24,7 +24,7 @@ void cti_senzory(unsigned long aktualni_ms)
     if (aktualni_ms - minuly_cas_cteni_bme >= interval_cteni_bme)
     {
         bme.takeForcedMeasurement();
-        teplota = bme.readTemperature() - 3;
+        teplota = bme.readTemperature() - 4;
         tlak = bme.readPressure() / 100.0F;
         vlhkost = bme.readHumidity();
         nadmorskavyska = int(bme.readAltitude(SEALEVELPRESSURE_HPA));
@@ -38,7 +38,7 @@ void cti_senzory(unsigned long aktualni_ms)
 
 void prvni_cteni_teploty() {
     bme.takeForcedMeasurement();
-    teplota = bme.readTemperature() - 1;
+    teplota = bme.readTemperature() - 3;
     tlak = bme.readPressure() / 100.0F;
     vlhkost = bme.readHumidity();
     nadmorskavyska = int(bme.readAltitude(SEALEVELPRESSURE_HPA));

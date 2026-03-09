@@ -1,4 +1,4 @@
 #pragma once
 
-#define SSID "netis"
-#define HESLO "zaverecka"
+#define SSID "jirkosmobilos"
+#define HESLO "kupsisvojedata"
