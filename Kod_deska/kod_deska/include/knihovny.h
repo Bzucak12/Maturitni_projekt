@@ -5,6 +5,7 @@
 #include <Wire.h>
 #include <Adafruit_GFX.h>    // https://github.com/adafruit/Adafruit-GFX-Library
 #include <Adafruit_SH110X.h> // https://github.com/adafruit/Adafruit_SH110X
+#include <Fonts/FreeSansBold9pt7b.h>
 #include <Adafruit_Sensor.h> // https://github.com/adafruit/Adafruit_Sensor
 #include <Adafruit_BME280.h> // https://github.com/adafruit/Adafruit_BME280_Library
 #include <LD2450.h>

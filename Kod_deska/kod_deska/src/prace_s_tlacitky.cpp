@@ -26,9 +26,9 @@ void cti_tlacitka()
         if (tlacitko1.wasPressed())
         {
             strana_menu++;
-            if (strana_menu >= 1)
+            if (strana_menu >= 2)
             {
-                strana_menu = 1;
+                strana_menu = 2;
             }
         }
     }
