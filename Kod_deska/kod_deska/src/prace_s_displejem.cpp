@@ -46,7 +46,7 @@ void vypis_na_displej(unsigned long aktualni_ms)
             displej.setCursor(0, 0);
             switch (strana_menu)
             {
-            case 0:
+            case 2:
             {
                 String s_nadpis_teplota_vlhkost = "Telpota      Vlhkost";
                 String s_teplota = String(teplota, 1) + "C "; 
@@ -70,7 +70,7 @@ void vypis_na_displej(unsigned long aktualni_ms)
                 displej.println(s_pocet_osob);
                 break;
             }
-            case 1:
+            case 3:
             {
                 String s_nadpis_tlak = "Tlak";
                 String s_tlak = String(tlak, 1) + "hPa";
@@ -92,10 +92,29 @@ void vypis_na_displej(unsigned long aktualni_ms)
                 displej.println(s_nadmorska_vyska);
                 break;
             }
-            case 2:
+            case 1:
+            {
+                String s_nadpis_cas = "Cas";
+                String s_nadpis_datum = "Datum";
+                displej.setFont();
+                displej.setTextSize(1);
+                displej.setCursor(55, 0);
+                displej.println(s_nadpis_cas);
+                displej.setCursor(50, 30);
+                displej.println(s_nadpis_datum);
+                String s_cas = ziskej_hodiny_minuty_sekundy();
+                String s_datum = ziskej_den_mesic_rok();
+                displej.setFont(&FreeSansBold9pt7b);
+                displej.setCursor(30, 25);
+                displej.println(s_cas);
+                displej.setCursor(20, 55);
+                displej.println(s_datum);
+                break;
+            }
+            case 0:
             {
                 displej.clearDisplay();
-                displej.drawBitmap(34, 2, epd_bitmap_rsz_1l1, 128, 64, 0xFFFF);
+                displej.drawBitmap(34, 2, epd_bitmap_rsz_1l1, 60, 60, SH110X_WHITE);
                 displej.display();
                 break;
             }

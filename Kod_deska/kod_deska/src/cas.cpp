@@ -30,3 +30,27 @@ String ziskej_cas()
     strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", &casove_infomace);
     return String(buf);
 }
+
+String ziskej_hodiny_minuty_sekundy()
+{
+    struct tm casove_infomace;
+    char buf[16] = {0};
+    if (!getLocalTime(&casove_infomace))
+    {
+        return String("zadny-cas");
+    }
+    strftime(buf, sizeof(buf), "%H:%M:%S", &casove_infomace);
+    return String(buf);
+}
+
+String ziskej_den_mesic_rok()
+{
+    struct tm casove_infomace;
+    char buf[16] = {0};
+    if (!getLocalTime(&casove_infomace))
+    {
+        return String("zadny-cas");
+    }
+    strftime(buf, sizeof(buf), "%d.%m.%Y", &casove_infomace);
+    return String(buf);
+}

@@ -51,13 +51,13 @@ void setup()
     File soubor_pohyb = SD.open("/pohyb.csv");
     if (!soubor_pohyb)
     {
-        uloz_data("/pohyb.csv", "cas,pohyb,pocet_osob");
+        uloz_data("/pohyb.csv", "cas_ulozeni,pohyb,pocet_osob");
     }
     soubor_pohyb.close();
     File soubor_teplota = SD.open("/teplota.csv");
     if (!soubor_teplota)
     {
-        uloz_data("/teplota.csv", "cas,pohyb,pocet_osob");
+        uloz_data("/teplota.csv", "cas_ulozeni,teplota,vlhkost,tlak,nadmorska_vyska");
     }
     soubor_teplota.close();
     tlacitko1.begin();
@@ -86,4 +86,5 @@ void loop()
     posli_data_senzoru_pohybu_na_server(aktualni_ms);
     posli_data_senzoru_teploty_na_server(aktualni_ms);
     aktualizaceLedek();
+    synchronizace_dat(aktualni_ms);
 }

@@ -8,7 +8,7 @@ void posli_data_senzoru_pohybu_na_server(unsigned long ms)
     if (ms - minuly_cas_poslani >= interval_poslani)
     {
         minuly_cas_poslani = ms;
-        if (pohyb != minuly_pohyb) {
+        if (pocet_osob != minuly_pocet_osob) {
             if (WiFi.status() == WL_CONNECTED)
             {
                 HTTPClient http;

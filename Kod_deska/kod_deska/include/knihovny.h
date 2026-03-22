@@ -24,3 +24,4 @@
 #include "prace_se_sensory.h"
 #include "prace_s_displejem.h"
 #include "prace_s_ledkami.h"
+#include "synchronizace_dat.h"

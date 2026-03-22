@@ -87,14 +87,14 @@ void zapis_data_senzoru_pohybu_do_souboru(unsigned long aktualni_ms)
     const unsigned long interval_zapisu = 1000;
     if (aktualni_ms - minuly_cas_zapisu >= interval_zapisu)
     {
-        if (pohyb != minuly_pohyb) {
+        minuly_cas_zapisu = aktualni_ms;
+        if (pocet_osob != minuly_pocet_osob) {
             String cas = ziskej_cas();
             String data = cas + "," +
                         String(pohyb ? "1" : "0") + "," +
                         String(pocet_osob);
 
             uloz_data("/pohyb.csv", data);
-            minuly_cas_zapisu = aktualni_ms;
         }
     }
 }
