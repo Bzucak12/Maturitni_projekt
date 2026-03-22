@@ -116,8 +116,8 @@ void synchronizuj_chybejici_zaznamy_teploty(unsigned long ms)
             
             String data = "cas_ulozeni=" + pole[0] +
                             "&teplota=" + pole[1] +
-                            "&vlhkost=" + pole[2] +
-                            "&tlak=" + pole[3] +
+                            "&tlak=" + pole[2] +
+                            "&vlhkost=" + pole[3] +
                             "&nadmorska_vyska=" + pole[4];
             
             int odpoved_nahrani = nahravaci_url.POST(data);
