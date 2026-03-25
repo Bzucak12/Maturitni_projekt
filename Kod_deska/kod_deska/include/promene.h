@@ -22,9 +22,9 @@ inline const byte horni_mez_teploty = 25;
 inline const byte spodni_mez_teploty = 19;
 inline const byte horni_mez_vlhkosti = 60;
 
-inline float kompenzace_teploty = 4.0;
-inline const float krok_kompenzace_teploty = 0.2;
-inline const float maximalni_kompenzace_teploty = 9.0;
+inline float kompenzace_teploty = 3.0;
+inline const float krok_kompenzace_teploty = 0.1;
+inline const float maximalni_kompenzace_teploty = 7.0;
 
 inline bool pohyb = false;
 inline byte pocet_osob = 0;

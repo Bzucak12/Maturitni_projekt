@@ -1,4 +1,4 @@
-#include "prace_se_sensory.h"
+#include "prace_se_senzory.h"
 
 void cti_senzory(unsigned long aktualni_ms)
 {
@@ -9,12 +9,12 @@ void cti_senzory(unsigned long aktualni_ms)
     if (aktualni_ms - minuly_cas_cteni_radaru >= interval_cteni_radaru)
     {
         radar.read();
-        const LD2450::RadarTarget target0 = radar.getTarget(0);
-        const LD2450::RadarTarget target1 = radar.getTarget(1);
-        const LD2450::RadarTarget target2 = radar.getTarget(2);
-        pohyb = target0.valid;
-        pocet_osob = target0.valid + target1.valid + target2.valid;
+        const LD2450::RadarTarget osoba0 = radar.getTarget(0);
+        const LD2450::RadarTarget osoba1 = radar.getTarget(1);
+        const LD2450::RadarTarget osoba2 = radar.getTarget(2);
+        pohyb = osoba0.valid;
         minuly_pocet_osob = pocet_osob;
+        pocet_osob = osoba0.valid + osoba1.valid + osoba2.valid;
         minuly_cas_cteni_radaru = aktualni_ms;
     }
     else

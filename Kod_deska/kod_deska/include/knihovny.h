@@ -21,7 +21,7 @@
 #include "prace_se_soubory.h"
 #include "prace_se_serverem.h"
 #include "prace_s_tlacitky.h"
-#include "prace_se_sensory.h"
+#include "prace_se_senzory.h"
 #include "prace_s_displejem.h"
 #include "prace_s_ledkami.h"
 #include "synchronizace_dat.h"
