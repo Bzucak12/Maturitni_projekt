@@ -1,37 +1,60 @@
 #include "synchronizace_dat.h"
 
-static const char* FIRST_FAILED_UPLOAD_FILENAME = "/first_failed_upload_timestamp.txt";
+bool potrebuje_synchronizaci = false;
+bool potrebuje_synchronizaci_teplota = false;
+bool potrebuje_synchronizaci_pohyb = false;
 
-String nactiPrvniNeuspesnyUpload()
+static void updatePotrebujeSynchronizaci()
 {
-  if (!SD.exists(FIRST_FAILED_UPLOAD_FILENAME))
+  potrebuje_synchronizaci = potrebuje_synchronizaci_teplota || potrebuje_synchronizaci_pohyb;
+}
+
+String nactiPrvniNeuspesnyUpload(const char* filename)
+{
+  if (!SD.exists(filename))
     return String("");
 
-  File f = SD.open(FIRST_FAILED_UPLOAD_FILENAME, FILE_READ);
+  File f = SD.open(filename, FILE_READ);
   if (!f)
     return String("");
 
   String cas = f.readStringUntil('\n');
   f.close();
   cas.trim();
+  if (cas.length() > 0)
+  {
+    if (strcmp(filename, SOUBOR_PRVNI_NEUSPESNY_UPLOAD_TEPLOTY) == 0)
+      potrebuje_synchronizaci_teplota = true;
+    else if (strcmp(filename, SOUBOR_PRVNI_NEUSPESNY_UPLOAD_POHYBU) == 0)
+      potrebuje_synchronizaci_pohyb = true;
+
+    updatePotrebujeSynchronizaci();
+  }
   return cas;
 }
 
-bool ulozPrvniNeuspesnyUpload(const String &cas)
+bool ulozPrvniNeuspesnyUpload(const char* filename, const String &cas)
 {
   // Zkontroluje, zda timestamp prvniho selhani uz existuje
-  if (SD.exists(FIRST_FAILED_UPLOAD_FILENAME))
+  if (SD.exists(filename))
   {
     Serial.println("Timestamp prvniho neuspesneho uploadu uz existuje - ponecham puvodni!");
     return false; // Timestamp jiz existuje
   }
 
-  File f = SD.open(FIRST_FAILED_UPLOAD_FILENAME, FILE_WRITE);
+  File f = SD.open(filename, FILE_WRITE);
   if (!f)
     return false;
 
   f.println(cas);
   f.close();
+
+  if (strcmp(filename, SOUBOR_PRVNI_NEUSPESNY_UPLOAD_TEPLOTY) == 0)
+    potrebuje_synchronizaci_teplota = true;
+  else if (strcmp(filename, SOUBOR_PRVNI_NEUSPESNY_UPLOAD_POHYBU) == 0)
+    potrebuje_synchronizaci_pohyb = true;
+
+  updatePotrebujeSynchronizaci();
   Serial.println("Ulozen prvni timestamp selhani: " + cas);
   return true;
 }
@@ -62,17 +85,23 @@ bool ulozPosledniUspesnyUpload(const char* filename, const String &cas)
   return true;
 }
 
-void smazPrvniNeuspesnyUpload()
+void smazPrvniNeuspesnyUpload(const char* filename)
 {
-  if (SD.exists(FIRST_FAILED_UPLOAD_FILENAME))
-    SD.remove(FIRST_FAILED_UPLOAD_FILENAME);
-}
+  if (SD.exists(filename))
+    SD.remove(filename);
 
-static const char* LAST_SUCCESS_UPLOAD_TEPLOTA_FILE = "/last_success_upload_teplota.txt";
-static const char* LAST_SUCCESS_UPLOAD_POHYB_FILE = "/last_success_upload_pohyb.txt";
+  if (strcmp(filename, SOUBOR_PRVNI_NEUSPESNY_UPLOAD_TEPLOTY) == 0)
+    potrebuje_synchronizaci_teplota = false;
+  else if (strcmp(filename, SOUBOR_PRVNI_NEUSPESNY_UPLOAD_POHYBU) == 0)
+    potrebuje_synchronizaci_pohyb = false;
+
+  updatePotrebujeSynchronizaci();
+}
 
 void synchronizace_dat(unsigned long ms)
 {
+  if (!potrebuje_synchronizaci)
+    return;
   synchronizuj_chybejici_zaznamy_teploty(ms);
   synchronizuj_chybejici_zaznamy_pohybu(ms);
 }
@@ -95,8 +124,8 @@ void synchronizuj_chybejici_zaznamy_teploty(unsigned long ms)
 
   Serial.println("\n=== Spoustim synchronizaci teploty (local-only) ===");
 
-  String prvniNeuspesnyCas = nactiPrvniNeuspesnyUpload();
-  String posledniUspesnyCas = nactiPosledniUspesnyUpload(LAST_SUCCESS_UPLOAD_TEPLOTA_FILE);
+  String prvniNeuspesnyCas = nactiPrvniNeuspesnyUpload(SOUBOR_PRVNI_NEUSPESNY_UPLOAD_TEPLOTY);
+  String posledniUspesnyCas = nactiPosledniUspesnyUpload(SOUBOR_POSLEDNI_USPESNY_UPLOAD_TEPLOTY);
   String startCas = "";
 
   if (prvniNeuspesnyCas.length() > 0)
@@ -171,7 +200,7 @@ void synchronizuj_chybejici_zaznamy_teploty(unsigned long ms)
           {
             Serial.println("Zaznam byl uspesne nahran");
             pocet_chybejicich++;
-            if (!ulozPosledniUspesnyUpload(LAST_SUCCESS_UPLOAD_TEPLOTA_FILE, sd_casova_znacka))
+            if (!ulozPosledniUspesnyUpload(SOUBOR_POSLEDNI_USPESNY_UPLOAD_TEPLOTY, sd_casova_znacka))
             {
               Serial.println("Chyba pri ukladani posledniho uspesneho uploadu teploty");
             }
@@ -179,16 +208,9 @@ void synchronizuj_chybejici_zaznamy_teploty(unsigned long ms)
           else
           {
             Serial.println("Nahrani zaznamu selhalo");
-            if (!SD.exists(FIRST_FAILED_UPLOAD_FILENAME))
+            if (ulozPrvniNeuspesnyUpload(SOUBOR_PRVNI_NEUSPESNY_UPLOAD_TEPLOTY, sd_casova_znacka))
             {
-              if (ulozPrvniNeuspesnyUpload(sd_casova_znacka))
-              {
-                Serial.println("Ulozen timestamp prvniho neuspesneho uploadu: " + sd_casova_znacka);
-              }
-              else
-              {
-                Serial.println("Chyba pri ukladani timestampu prvniho neuspesneho uploadu");
-              }
+              Serial.println("Ulozen timestamp prvniho neuspesneho uploadu teploty: " + sd_casova_znacka);
             }
             errorPriSynchronizaci = true;
           }
@@ -208,7 +230,7 @@ void synchronizuj_chybejici_zaznamy_teploty(unsigned long ms)
 
   if (maSelhani && !errorPriSynchronizaci)
   {
-    smazPrvniNeuspesnyUpload();
+    smazPrvniNeuspesnyUpload(SOUBOR_PRVNI_NEUSPESNY_UPLOAD_TEPLOTY);
     Serial.println("Uspesna synchronizace teploty po selhani - timestamp smazan.");
   }
 
@@ -235,8 +257,8 @@ void synchronizuj_chybejici_zaznamy_pohybu(unsigned long ms)
 
   Serial.println("\n=== Spoustim synchronizaci pohybu (local-only) ===");
 
-  String prvniNeuspesnyCas = nactiPrvniNeuspesnyUpload();
-  String posledniUspesnyCas = nactiPosledniUspesnyUpload(LAST_SUCCESS_UPLOAD_POHYB_FILE);
+  String prvniNeuspesnyCas = nactiPrvniNeuspesnyUpload(SOUBOR_PRVNI_NEUSPESNY_UPLOAD_POHYBU);
+  String posledniUspesnyCas = nactiPosledniUspesnyUpload(SOUBOR_POSLEDNI_USPESNY_UPLOAD_POHYBU);
   String startCas = "";
 
   if (prvniNeuspesnyCas.length() > 0)
@@ -309,7 +331,7 @@ void synchronizuj_chybejici_zaznamy_pohybu(unsigned long ms)
           {
             Serial.println("Zaznam byl uspesne nahran");
             pocet_chybejicich++;
-            if (!ulozPosledniUspesnyUpload(LAST_SUCCESS_UPLOAD_POHYB_FILE, sd_casova_znacka))
+            if (!ulozPosledniUspesnyUpload(SOUBOR_POSLEDNI_USPESNY_UPLOAD_POHYBU, sd_casova_znacka))
             {
               Serial.println("Chyba pri ukladani posledniho uspesneho uploadu pohybu");
             }
@@ -317,16 +339,9 @@ void synchronizuj_chybejici_zaznamy_pohybu(unsigned long ms)
           else
           {
             Serial.println("Nahrani zaznamu selhalo");
-            if (!SD.exists(FIRST_FAILED_UPLOAD_FILENAME))
+            if (ulozPrvniNeuspesnyUpload(SOUBOR_PRVNI_NEUSPESNY_UPLOAD_POHYBU, sd_casova_znacka))
             {
-              if (ulozPrvniNeuspesnyUpload(sd_casova_znacka))
-              {
-                Serial.println("Ulozen timestamp prvniho neuspesneho uploadu: " + sd_casova_znacka);
-              }
-              else
-              {
-                Serial.println("Chyba pri ukladani timestampu prvniho neuspesneho uploadu");
-              }
+              Serial.println("Ulozen timestamp prvniho neuspesneho uploadu pohybu: " + sd_casova_znacka);
             }
             errorPriSynchronizaci = true;
           }
@@ -346,7 +361,7 @@ void synchronizuj_chybejici_zaznamy_pohybu(unsigned long ms)
 
   if (maSelhani && !errorPriSynchronizaci)
   {
-    smazPrvniNeuspesnyUpload();
+    smazPrvniNeuspesnyUpload(SOUBOR_PRVNI_NEUSPESNY_UPLOAD_POHYBU);
     Serial.println("Uspesna synchronizace pohybu po selhani - timestamp smazan.");
   }
 

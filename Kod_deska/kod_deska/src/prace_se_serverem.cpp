@@ -1,10 +1,6 @@
 #include "prace_se_serverem.h"
 #include "synchronizace_dat.h"
 
-static const char* FIRST_FAILED_UPLOAD_FILENAME = "/first_failed_upload_timestamp.txt";
-static const char* LAST_SUCCESS_UPLOAD_POHYB_FILE = "/last_success_upload_pohyb.txt";
-static const char* LAST_SUCCESS_UPLOAD_TEPLOTA_FILE = "/last_success_upload_teplota.txt";
-
 void posli_data_senzoru_pohybu_na_server(unsigned long ms)
 {
     const int interval_poslani = 1000;
@@ -31,7 +27,7 @@ void posli_data_senzoru_pohybu_na_server(unsigned long ms)
                 {
                     String odpoved = http.getString();
                     Serial.println("Odpoved serveru: " + odpoved);
-                    if (!ulozPosledniUspesnyUpload(LAST_SUCCESS_UPLOAD_POHYB_FILE, cas))
+                    if (!ulozPosledniUspesnyUpload(SOUBOR_POSLEDNI_USPESNY_UPLOAD_POHYBU, cas))
                     {
                         Serial.println("Chyba pri ukladani posledniho uspesneho uploadu pohybu");
                     }
@@ -39,7 +35,7 @@ void posli_data_senzoru_pohybu_na_server(unsigned long ms)
                 else
                 {
                     Serial.println("Chyba pri odeslani POST: " + String(http_kod_odpovedi));
-                    ulozPrvniNeuspesnyUpload(cas);
+                    ulozPrvniNeuspesnyUpload(SOUBOR_PRVNI_NEUSPESNY_UPLOAD_POHYBU, cas);
                 }
 
                 http.end();
@@ -48,7 +44,7 @@ void posli_data_senzoru_pohybu_na_server(unsigned long ms)
             {
                 Serial.println("WiFi neni pripojena. Nelze poslat data.");
                 String cas = ziskej_cas();
-                ulozPrvniNeuspesnyUpload(cas);
+                ulozPrvniNeuspesnyUpload(SOUBOR_PRVNI_NEUSPESNY_UPLOAD_POHYBU, cas);
             }
         }
     }
@@ -86,7 +82,7 @@ void posli_data_senzoru_teploty_na_server(unsigned long ms)
             {
                 String odpoved = http.getString();
                 Serial.println("Odpoved serveru: " + odpoved);
-                if (!ulozPosledniUspesnyUpload(LAST_SUCCESS_UPLOAD_TEPLOTA_FILE, cas))
+                if (!ulozPosledniUspesnyUpload(SOUBOR_POSLEDNI_USPESNY_UPLOAD_TEPLOTY, cas))
                 {
                     Serial.println("Chyba pri ukladani posledniho uspesneho uploadu teploty");
                 }
@@ -94,7 +90,7 @@ void posli_data_senzoru_teploty_na_server(unsigned long ms)
             else
             {
                 Serial.println("Chyba pri odeslani POST: " + String(http_kod_odpovedi));
-                ulozPrvniNeuspesnyUpload(cas);
+                ulozPrvniNeuspesnyUpload(SOUBOR_PRVNI_NEUSPESNY_UPLOAD_TEPLOTY, cas);
             }
 
             http.end();
@@ -103,7 +99,7 @@ void posli_data_senzoru_teploty_na_server(unsigned long ms)
         {
             Serial.println("WiFi neni pripojena. Nelze poslat data.");
             String cas = ziskej_cas();
-            ulozPrvniNeuspesnyUpload(cas);
+            ulozPrvniNeuspesnyUpload(SOUBOR_PRVNI_NEUSPESNY_UPLOAD_TEPLOTY, cas);
         }
     }
 }

@@ -46,3 +46,8 @@ inline String URL_CASU_TEPLOTY = "http://antl.tomascmol.net/ziskat_casy_mereni_t
 inline String URL_CHYBEJICI_TEPLOTY = "http://antl.tomascmol.net/odeslat_chybejici_data_teploty.php";
 inline String URL_CASU_POHYBU = "http://antl.tomascmol.net/ziskat_casy_mereni_pohybu.php";
 inline String URL_CHYBEJICIHO_POHYBU = "http://antl.tomascmol.net/odeslat_chybejici_data_pohybu.php";
+
+inline const char* SOUBOR_PRVNI_NEUSPESNY_UPLOAD_TEPLOTY = "/cas_prvniho_neuspesneho_uploadu_teploty.txt";
+inline const char* SOUBOR_PRVNI_NEUSPESNY_UPLOAD_POHYBU = "/cas_prvniho_neuspesneho_uploadu_pohybu.txt";
+inline const char* SOUBOR_POSLEDNI_USPESNY_UPLOAD_TEPLOTY = "/cas_posledniho_uspesneho_uploadu_teploty.txt";
+inline const char* SOUBOR_POSLEDNI_USPESNY_UPLOAD_POHYBU = "/cas_posledniho_uspesneho_uploadu_pohybu.txt";
